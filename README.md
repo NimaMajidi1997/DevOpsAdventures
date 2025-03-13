@@ -23,13 +23,14 @@
 	3.2.2 --> docker-compose added for testing (docker-compose up --build , docker-compose down --remove-orphans)
 	3.3.0 --> docker certificate added, modify style
 	3.4.3 --> add google analytics to website 
-	3.4.4 --> update resume, style, ...
+	3.4.4 --> update resume, style, ... 
+	3.4.5 --> screen fixed and compile CSS (sass --watch scss/styles.scss:css/styles.css)
 
 	Renew SSL certificates:
 		docker stop <container_id_or_name>;
 		sudo certbot certonly --standalone -d nimadevops.de -d www.nimadevops.de;
 		docker rm -f port_web || true;
-		sudo docker run -d -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt --name port_web nimaianp75/devops_web:3.4.2
+		sudo docker run -d -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt --name port_web nimaianp75/devops_web:3.4.5
 
 
 # &#128640; Azure Pipeline Agents
