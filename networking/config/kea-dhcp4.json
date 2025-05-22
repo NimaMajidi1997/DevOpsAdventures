@@ -1,0 +1,38 @@
+{
+  "Dhcp4": {
+    "subnet4": [
+      {
+        "subnet": "10.0.0.0/24",
+        "pools": [
+          {
+            "pool": "10.0.0.3-10.0.0.10"
+          }
+        ],
+        "id": 1,
+        "interface": "eth0"
+      }
+    ],
+    "interfaces-config": {
+      "interfaces": [
+        "eth0"
+      ]
+    },
+    "renew-timer": 1000,
+    "rebind-timer": 2000,
+    "valid-lifetime": 4000,
+    "loggers": [
+      {
+        "name": "kea-dhcp4",
+        "output_options": [
+          {
+            "output": "stdout"
+          }
+        ],
+        "severity": "INFO"
+      }
+    ],
+    "lease-database": {
+      "type": "memfile"
+    }
+  }
+}

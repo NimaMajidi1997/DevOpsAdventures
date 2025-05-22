@@ -1,0 +1,24 @@
+services:
+  kea-server:
+    image: docker.cloudsmith.io/isc/docker/kea-dhcp4:2.7.8
+    container_name: dhcp4-vlan20
+    volumes:
+      - ./config/kea-dhcp4.json:/etc/kea/kea-dhcp4.conf
+      - leases:/var/lib/kea/
+    networks:
+      vlan20: # network that binds container to host network interface
+        ipv4_address: 10.0.0.2 # ip for kea4 server
+
+networks:
+  vlan20: # network that binds container to host network interface.
+    name: vlan_20
+    driver: ipvlan
+    driver_opts:
+      parent: eth1.20 #  host interface that kea containers will use !!!!!!
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24  # subnet for kea4 server
+
+volumes:
+  leases:
+    name: leases_vlan-20
