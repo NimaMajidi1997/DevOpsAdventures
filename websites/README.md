@@ -77,5 +77,35 @@ Run Certbot to issue certificates for both domains
 You can test renewal with:
 ```bash
  sudo certbot renew --dry-run
+```
 
+
+Adding password for specific parts of the webpage:
+```bash
+sudo apt install apache2-utils 
+htpasswd -c /etc/nginx/.htpasswd premiumuser
+```
+-c creates the file — use it only the first time. Omit -c to add more users.
+
+
+Modify ``/etc/nginx/sites-available/market.nimadevops.de``:
+
+```bash
+    location ^~ /portfolio {
+        auth_basic "Restricted Area";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+
+        proxy_pass http://localhost:3000;  # same as your main app
+        proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+```
+
+and reload NGINX:
+```bash
+sudo nginx -t && sudo systemctl reload nginx
 ```
