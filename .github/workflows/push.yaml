@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  MY_IMAGE: "nimaianp75/devops_web:3.4.6"
+  MY_IMAGE: "nimaianp75/portfolio"
 
 jobs:
   build:
@@ -37,20 +37,20 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_SERVER }}
 
-      - name: SSH to Server and Remove Existing Container=port_web
+      - name: SSH to Server and Remove Existing Container=portfolio-site
         env:
           ip_add: ${{ secrets.IP_ADD }}
         run: |
-              ssh -o StrictHostKeyChecking=no $ip_add 'docker rm -f port_web || true'
+              ssh -o StrictHostKeyChecking=no $ip_add 'docker rm -f portfolio-site || true'
 
       - name: SSH to Server and Pull Docker Image
         env:
           ip_add: ${{ secrets.IP_ADD }}
         run: |
-          ssh -o StrictHostKeyChecking=no $ip_add 'docker pull nimaianp75/devops_web:3.4.6'
+          ssh -o StrictHostKeyChecking=no $ip_add 'docker pull nimaianp75/portfolio'
 
       - name: SSH to Server and Run Docker Container
         env:
           ip_add: ${{ secrets.IP_ADD }}
         run: |
-          ssh -o StrictHostKeyChecking=no $ip_add 'docker run -d -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt --name port_web nimaianp75/devops_web:3.4.6'
+          ssh -o StrictHostKeyChecking=no $ip_add 'docker run -d -p 8000:80 --name portfolio-site nimaianp75/portfolio'
