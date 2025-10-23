@@ -10,7 +10,7 @@ You can run the containers inside the server with:
 # nimadevops.de → port 8000
 docker run -d -p 8000:3000 --name portfolio-site nimaianp75/portfolio
 # market.nimadevops.de → port 8080
-docker run -d -p 8080:80 --name market-site nimaianp75/market
+docker run -d -p 3000:3000 --name market-site nimaianp75/market
 ```
 # reverse proxy config
 ## nimadevops.de
