@@ -8,7 +8,7 @@ docker build -t nimaianp75/market -f market-dockerfile .
 You can run the containers inside the server with:
 ```bash
 # nimadevops.de → port 8000
-docker run -d -p 8000:80 --name portfolio-site nimaianp75/portfolio
+docker run -d -p 8000:3000 --name portfolio-site nimaianp75/portfolio
 # market.nimadevops.de → port 8080
 docker run -d -p 8080:80 --name market-site nimaianp75/market
 ```
