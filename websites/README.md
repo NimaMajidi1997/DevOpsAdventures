@@ -13,7 +13,8 @@ docker run -d -p 8000:80 --name portfolio-site nimaianp75/portfolio
 docker run -d -p 8080:80 --name market-site nimaianp75/market
 ```
 # reverse proxy config
-Now let's create reverse proxy config for nimadevops.de:
+## nimadevops.de
+Now let's create reverse proxy config:
 ```bash
 sudo nano /etc/nginx/sites-available/nimadevops.de
 ```
@@ -30,21 +31,74 @@ server {
     }
 }
 ```
-and aldo config for market.nimadevops.de:
+## market.nimadevops.de
 ```bash
 sudo nano /etc/nginx/sites-available/market.nimadevops.de
 ```
 with this content:
 ```bash
 server {
-    listen 80;
+    # Listen on both ports and mark as the default server
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+
+    # You must provide SSL certificates for the default HTTPS listener
+    ssl_certificate /etc/letsencrypt/live/nimadevops.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nimadevops.de/privkey.pem;
+
+    # This server_name is a catch-all for requests that don't match other server blocks
+    server_name _;
+
+    # Immediately redirect all traffic to your correct domain
+    return 301 https://market.nimadevops.de$request_uri;
+}
+
+server {
     server_name market.nimadevops.de;
 
-    location / {
-        proxy_pass http://localhost:8080;
+    location ^~ /portfolio {
+        auth_basic "Restricted Area";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+
+        proxy_pass http://localhost:3000;
         proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_cache_bypass $http_upgrade;
         proxy_set_header X-Real-IP $remote_addr;
     }
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/nimadevops.de/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/nimadevops.de/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = market.nimadevops.de) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name market.nimadevops.de;
+    return 404; # managed by Certbot
+
+
 }
 ```
 
@@ -80,7 +134,7 @@ You can test renewal with:
 ```
 
 
-Adding password for specific parts of the webpage:
+## Adding password for specific parts of the webpage:
 ```bash
 sudo apt install apache2-utils 
 htpasswd -c /etc/nginx/.htpasswd premiumuser
